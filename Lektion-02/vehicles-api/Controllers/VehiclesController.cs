@@ -9,28 +9,26 @@ namespace vehicles_api.Controllers;
 public class VehiclesController : ControllerBase
 {
   private readonly IWebHostEnvironment _environment;
+  private readonly string _path;
+  private readonly List<Vehicle> _vehicles;
 
   public VehiclesController(IWebHostEnvironment environment)
   {
     _environment = environment;
+    _path = string.Concat(_environment.ContentRootPath, "/Data/vehicles.json");
+    _vehicles = LoadVehicles();
   }
 
   [HttpGet()]
   public ActionResult ListVehicles()
   {
-    var path = string.Concat(_environment.ContentRootPath, "/Data/vehicles.json");
-    var vehicles = Storage<Vehicle>.ReadJson(path);
-
-    return Ok(new { success = true, data = vehicles });
+    return Ok(new { success = true, data = _vehicles });
   }
 
   [HttpGet("{id}")]
   public ActionResult FindVehicle(int id)
   {
-    var path = string.Concat(_environment.ContentRootPath, "/Data/vehicles.json");
-    var vehicles = Storage<Vehicle>.ReadJson(path);
-
-    var vehicle = vehicles.SingleOrDefault(v => v.Id == id);
+    var vehicle = _vehicles.SingleOrDefault(v => v.Id == id);
 
     if (vehicle is not null)
     {
@@ -40,25 +38,18 @@ public class VehiclesController : ControllerBase
     return NotFound(new { success = false, message = $"Tyvärr kunde vi inte hitta någon bil med id: {id}" });
   }
 
-  // http://localhost:5001/api/v1/vehicles
+  [HttpGet("manufacturer/{name}")]
+  public ActionResult FindVehicle(string name)
+  {
+    var vehicles = _vehicles.FindAll(vehicle => vehicle.Manufacturer.ToLower() == name.ToLower());
+    return Ok(new { success = true, data = vehicles });
+  }
+
   [HttpPost()]
   public ActionResult AddVehicle(Vehicle vehicle)
   {
-    // 1. Vi måste få in det data som ska sparas✅
     var newVehicle = Create(vehicle);
-
-    // 4. Returnera korrekt statuskod till avsändaren (201 Created)...✅
-    // HATEOS...
-    // Mer korrekt sätta att returnera statuskod 201...
-    // CreatedAtAction gör följande åt oss
-    // 1. Skapar en statuskod 201,
-    // 2. Första argumentet skapa en url för metoden FindVehicle
-    //    http://localhost:5001/api/v1/vehicles/
-    //    Andra argumentet skapar argumentet som FindVehicle behöver (int id)
-    //    http://localhost:5001/api/v1/vehicles/20
-    //    tredje argumentet kommer att returnera vår nya bil i body delen av http resultet...
     return CreatedAtAction(nameof(FindVehicle), new { id = newVehicle.Id }, newVehicle);
-    // return Created("http://localhost:5001/api/v1/vehicles/" + vehicle.Id, vehicle);
   }
 
   [HttpDelete("{id}")]
@@ -77,54 +68,36 @@ public class VehiclesController : ControllerBase
 
   private Vehicle Create(Vehicle vehicle)
   {
-    // 2. Skapa kod för att lägga till en ny bil i vår json fil...✅
-    var path = string.Concat(_environment.ContentRootPath, "/Data/vehicles.json");
-    var vehicles = Storage<Vehicle>.ReadJson(path);
-
-    // Skapa ett id genom att ta antalet bilar i listan och addera 1...✅
-    vehicle.Id = vehicles.Count + 1;
-    // Lägga till vår nya bil i listan...✅
-    vehicles.Add(vehicle);
-
-    // 3. Skriv ner den uppdaterade listan till json filen...✅
-    Storage<Vehicle>.WriteJson(path, vehicles);
+    vehicle.Id = _vehicles.Count + 1;
+    _vehicles.Add(vehicle);
+    SaveVehicle(_vehicles);
 
     return vehicle;
   }
 
   private void Remove(int id)
   {
-    var path = string.Concat(_environment.ContentRootPath, "/Data/vehicles.json");
-    var vehicles = Storage<Vehicle>.ReadJson(path);
-
-    // 1. Leta upp bilen som ska raderas...
-    // Lambda (vehicle => vehicle.Id == id)
-    // första delen i lambda är en variabel(ni hittar på den själv)
-    // det som står till höger om pilen(=>) är funktionen som ska köras...
-    var toDelete = vehicles.SingleOrDefault(vehicle => vehicle.Id == id);
-    // 2. Ta bort bilen ur listan...
-    // Vi använder en inbyggda metoden Remove som finns i typen List i .NET.
-    vehicles.Remove(toDelete);
-
-    // 3. Uppdatera json dokumentet med den nya listan...
-    Storage<Vehicle>.WriteJson(path, vehicles);
+    var toDelete = _vehicles.SingleOrDefault(vehicle => vehicle.Id == id);
+    _vehicles.Remove(toDelete);
+    SaveVehicle(_vehicles);
   }
 
   private void Update(int id, Vehicle updatedVehicle)
   {
-    // 1. Hämta alla bilar igen!...
-    var path = string.Concat(_environment.ContentRootPath, "/Data/vehicles.json");
-    var vehicles = Storage<Vehicle>.ReadJson(path);
+    var filteredList = _vehicles.FindAll(vehicle => vehicle.Id != id);
 
-    // 2. Filtrera listan av bilar och bara returnera de bilar som inte har
-    //    id för den bil vi ska uppdatera...
-    // Skapar en ny lista minus den bil som ska uppdateras.
-    var filteredList = vehicles.FindAll(vehicle => vehicle.Id != id);
-
-    // 3. Lägg till bilen som är uppdaterad till den filtrerade listan...
     filteredList.Add(updatedVehicle);
 
-    // 4. Skriv ner den nya listan...
-    Storage<Vehicle>.WriteJson(path, filteredList);
+    SaveVehicle(filteredList);
+  }
+
+  private List<Vehicle> LoadVehicles()
+  {
+    return Storage<Vehicle>.ReadJson(_path);
+  }
+
+  private void SaveVehicle(List<Vehicle> list)
+  {
+    Storage<Vehicle>.WriteJson(_path, list);
   }
 }
