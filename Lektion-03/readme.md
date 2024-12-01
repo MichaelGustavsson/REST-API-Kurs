@@ -5,10 +5,10 @@ Vi kommer inledningsvis använda Sqlite mycket beroende på att det är en väld
 
 Vårt fokus kommer att vara på hur vi
 
-- Ställa frågor
-- Lägga till nytt data
-- Uppdatera data
-- Samt radera data
+- Ställer frågor
+- Lägger till nytt data
+- Uppdaterar data
+- Samt raderar data
   Med hjälp av C# och EntityFramework.
 
 ### Entityframework
