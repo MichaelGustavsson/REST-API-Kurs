@@ -8,11 +8,11 @@ using eshop.api.Data;
 
 #nullable disable
 
-namespace eshop.api.Data.Migrations
+namespace eshop.api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250108084057_InitialCreateWithIdentity")]
-    partial class InitialCreateWithIdentity
+    [Migration("20250113173009_Sqlite")]
+    partial class Sqlite
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

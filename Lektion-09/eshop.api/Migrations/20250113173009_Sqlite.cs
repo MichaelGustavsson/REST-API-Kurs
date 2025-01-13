@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace eshop.api.Data.Migrations
+namespace eshop.api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreateWithIdentity : Migration
+    public partial class Sqlite : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -7,7 +7,7 @@ using eshop.api.Data;
 
 #nullable disable
 
-namespace eshop.api.Data.Migrations
+namespace eshop.api.Migrations
 {
     [DbContext(typeof(DataContext))]
     partial class DataContextModelSnapshot : ModelSnapshot
