@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eshop.api.Data;
 
@@ -11,9 +12,11 @@ using eshop.api.Data;
 namespace eshop.api.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250119171354_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -154,86 +157,23 @@ namespace eshop.api.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("eshop.api.Entities.Address", b =>
+            modelBuilder.Entity("eshop.api.Entities.Ingredient", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("IngredientId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("IngredientId"));
 
-                    b.Property<string>("AddressLine")
+                    b.Property<string>("ItemNumber")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("AddressTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PostalAddressId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AddressTypeId");
-
-                    b.HasIndex("PostalAddressId");
-
-                    b.ToTable("Addresses");
-                });
-
-            modelBuilder.Entity("eshop.api.Entities.AddressType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Value")
+                    b.Property<string>("Name")
                         .HasColumnType("longtext");
 
-                    b.HasKey("Id");
+                    b.HasKey("IngredientId");
 
-                    b.ToTable("AddressTypes");
-                });
-
-            modelBuilder.Entity("eshop.api.Entities.Customer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Customers");
-                });
-
-            modelBuilder.Entity("eshop.api.Entities.CustomerAddress", b =>
-                {
-                    b.Property<int>("AddressId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.HasKey("AddressId", "CustomerId");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("CustomerAddresses");
+                    b.ToTable("Ingredients");
                 });
 
             modelBuilder.Entity("eshop.api.Entities.OrderItem", b =>
@@ -257,32 +197,13 @@ namespace eshop.api.Data.Migrations
                     b.ToTable("OrderItems");
                 });
 
-            modelBuilder.Entity("eshop.api.Entities.PostalAddress", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("City")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("PostalCode")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PostalAddresses");
-                });
-
             modelBuilder.Entity("eshop.api.Entities.Product", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ProductId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ProductId"));
 
                     b.Property<string>("Description")
                         .HasColumnType("longtext");
@@ -299,7 +220,7 @@ namespace eshop.api.Data.Migrations
                     b.Property<string>("ProductName")
                         .HasColumnType("longtext");
 
-                    b.HasKey("Id");
+                    b.HasKey("ProductId");
 
                     b.ToTable("Products");
                 });
@@ -322,47 +243,26 @@ namespace eshop.api.Data.Migrations
 
             modelBuilder.Entity("eshop.api.Entities.Supplier", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("SupplierId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .HasColumnType("longtext");
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SupplierId"));
 
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Phone")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
+                    b.HasKey("SupplierId");
 
                     b.ToTable("Suppliers");
                 });
 
-            modelBuilder.Entity("eshop.api.Entities.SupplierAddress", b =>
+            modelBuilder.Entity("eshop.api.Entities.SupplierIngredient", b =>
                 {
-                    b.Property<int>("AddressId")
-                        .HasColumnType("int");
-
                     b.Property<int>("SupplierId")
                         .HasColumnType("int");
 
-                    b.HasKey("AddressId", "SupplierId");
-
-                    b.HasIndex("SupplierId");
-
-                    b.ToTable("SupplierAddresses");
-                });
-
-            modelBuilder.Entity("eshop.api.Entities.SupplierProduct", b =>
-                {
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SupplierId")
+                    b.Property<int>("IngredientId")
                         .HasColumnType("int");
 
                     b.Property<string>("ItemNumber")
@@ -371,15 +271,17 @@ namespace eshop.api.Data.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(65,30)");
 
-                    b.HasKey("ProductId", "SupplierId");
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
 
-                    b.HasIndex("ProductId")
-                        .IsUnique();
+                    b.Property<string>("Unit")
+                        .HasColumnType("longtext");
 
-                    b.HasIndex("SupplierId")
-                        .IsUnique();
+                    b.HasKey("SupplierId", "IngredientId");
 
-                    b.ToTable("SupplierProducts");
+                    b.HasIndex("IngredientId");
+
+                    b.ToTable("SupplierIngredients");
                 });
 
             modelBuilder.Entity("eshop.api.Entities.User", b =>
@@ -503,44 +405,6 @@ namespace eshop.api.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("eshop.api.Entities.Address", b =>
-                {
-                    b.HasOne("eshop.api.Entities.AddressType", "AddressType")
-                        .WithMany("Addresses")
-                        .HasForeignKey("AddressTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("eshop.api.Entities.PostalAddress", "PostalAddress")
-                        .WithMany("Addresses")
-                        .HasForeignKey("PostalAddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AddressType");
-
-                    b.Navigation("PostalAddress");
-                });
-
-            modelBuilder.Entity("eshop.api.Entities.CustomerAddress", b =>
-                {
-                    b.HasOne("eshop.api.Entities.Address", "Address")
-                        .WithMany("CustomerAddresses")
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("eshop.api.Entities.Customer", "Customer")
-                        .WithMany("CustomerAddresses")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Address");
-
-                    b.Navigation("Customer");
-                });
-
             modelBuilder.Entity("eshop.api.Entities.OrderItem", b =>
                 {
                     b.HasOne("eshop.api.Entities.Product", "Product")
@@ -560,71 +424,33 @@ namespace eshop.api.Data.Migrations
                     b.Navigation("SalesOrder");
                 });
 
-            modelBuilder.Entity("eshop.api.Entities.SupplierAddress", b =>
+            modelBuilder.Entity("eshop.api.Entities.SupplierIngredient", b =>
                 {
-                    b.HasOne("eshop.api.Entities.Address", "Address")
-                        .WithMany("SupplierAddresses")
-                        .HasForeignKey("AddressId")
+                    b.HasOne("eshop.api.Entities.Ingredient", "Ingredient")
+                        .WithMany("SupplierIngredients")
+                        .HasForeignKey("IngredientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("eshop.api.Entities.Supplier", "Supplier")
-                        .WithMany("SupplierAddresses")
+                        .WithMany("SupplierIngredients")
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Address");
+                    b.Navigation("Ingredient");
 
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("eshop.api.Entities.SupplierProduct", b =>
+            modelBuilder.Entity("eshop.api.Entities.Ingredient", b =>
                 {
-                    b.HasOne("eshop.api.Entities.Product", "Product")
-                        .WithOne("SupplierProduct")
-                        .HasForeignKey("eshop.api.Entities.SupplierProduct", "ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("eshop.api.Entities.Supplier", "Supplier")
-                        .WithOne("SupplierProducts")
-                        .HasForeignKey("eshop.api.Entities.SupplierProduct", "SupplierId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Supplier");
-                });
-
-            modelBuilder.Entity("eshop.api.Entities.Address", b =>
-                {
-                    b.Navigation("CustomerAddresses");
-
-                    b.Navigation("SupplierAddresses");
-                });
-
-            modelBuilder.Entity("eshop.api.Entities.AddressType", b =>
-                {
-                    b.Navigation("Addresses");
-                });
-
-            modelBuilder.Entity("eshop.api.Entities.Customer", b =>
-                {
-                    b.Navigation("CustomerAddresses");
-                });
-
-            modelBuilder.Entity("eshop.api.Entities.PostalAddress", b =>
-                {
-                    b.Navigation("Addresses");
+                    b.Navigation("SupplierIngredients");
                 });
 
             modelBuilder.Entity("eshop.api.Entities.Product", b =>
                 {
                     b.Navigation("OrderItems");
-
-                    b.Navigation("SupplierProduct");
                 });
 
             modelBuilder.Entity("eshop.api.Entities.SalesOrder", b =>
@@ -634,9 +460,7 @@ namespace eshop.api.Data.Migrations
 
             modelBuilder.Entity("eshop.api.Entities.Supplier", b =>
                 {
-                    b.Navigation("SupplierAddresses");
-
-                    b.Navigation("SupplierProducts");
+                    b.Navigation("SupplierIngredients");
                 });
 #pragma warning restore 612, 618
         }

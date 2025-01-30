@@ -1,10 +1,10 @@
 using System.Text;
-using eshop.api;
 using eshop.api.Data;
 using eshop.api.Entities;
 using eshop.api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -37,7 +37,6 @@ builder.Services.AddIdentityCore<User>(options =>
 
 // Dependency injection för vår TokenService...
 builder.Services.AddScoped<TokenService>();
-builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 
 builder.Services.AddControllers();
 
@@ -61,7 +60,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// Pipeline...
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -76,17 +74,15 @@ var services = scope.ServiceProvider;
 try
 {
   var context = services.GetRequiredService<DataContext>();
-  // var rolesMgr = services.GetRequiredService<RoleManager<IdentityRole>>();
-  // var userMgr = services.GetRequiredService<UserManager<User>>();
+  var rolesMgr = services.GetRequiredService<RoleManager<IdentityRole>>();
+  var userMgr = services.GetRequiredService<UserManager<User>>();
 
   await context.Database.MigrateAsync();
-  // await Seed.LoadRoles(rolesMgr);
-  // await Seed.LoadUsers(userMgr);
-  // await Seed.LoadProducts(context);
-  // await Seed.LoadSalesOrders(context);
-  // await Seed.LoadOrderItems(context);
-  await Seed.LoadAddressTypes(context);
-  await Seed.LoadSuppliers(context);
+  await Seed.LoadRoles(rolesMgr);
+  await Seed.LoadUsers(userMgr);
+  await Seed.LoadProducts(context);
+  await Seed.LoadSalesOrders(context);
+  await Seed.LoadOrderItems(context);
 }
 catch (Exception ex)
 {

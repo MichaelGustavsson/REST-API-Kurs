@@ -64,6 +64,7 @@ public class CustomersController(DataContext context) : ControllerBase
     {
       return BadRequest(new { success = false, message = $"Kund {model.Email} finns redan i systemet." });
     }
+
     // 1. Lagt kunden, väntat in resultatet
 
     // 2. Lagt till leveransadress, väntat in resultatet
