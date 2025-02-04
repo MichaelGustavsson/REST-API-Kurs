@@ -5,10 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace eshop.api;
 
-public class CustomerRepository(DataContext context, IAddressRepository repo) : ICustomerRepository
+public class CustomerRepository(DataContext context) : ICustomerRepository
 {
   private readonly DataContext _context = context;
-  private readonly IAddressRepository _repo = repo;
 
   public async Task<bool> Add(CustomerPostViewModel model)
   {
@@ -29,21 +28,59 @@ public class CustomerRepository(DataContext context, IAddressRepository repo) : 
       };
 
       await _context.AddAsync(customer);
+      await _context.SaveChangesAsync();
 
       foreach (var a in model.Addresses)
       {
-        var address = await _repo.Add(a);
+        var postalAddress = await _context.PostalAddresses.FirstOrDefaultAsync(
+          c => c.PostalCode.Replace(" ", "").Trim() == a.PostalCode.Replace(" ", "").Trim());
+
+        if (postalAddress is null)
+        {
+          await _context.PostalAddresses.AddAsync(new PostalAddress
+          {
+            PostalCode = a.PostalCode.Replace(" ", "").Trim(),
+            City = a.City.Trim()
+          });
+
+          await _context.SaveChangesAsync();
+
+          postalAddress = await _context.PostalAddresses.FirstOrDefaultAsync(
+            c => c.PostalCode.Replace(" ", "").Trim() == a.PostalCode.Replace(" ", "").Trim());
+        }
+
+        var address = await _context.Addresses.FirstOrDefaultAsync(
+          c => c.AddressLine.Trim().ToLower() == a.AddressLine.Trim().ToLower());
+
+        if (address is null)
+        {
+          await _context.Addresses.AddAsync(new Address
+          {
+            AddressLine = a.AddressLine,
+            AddressTypeId = (int)a.AddressType,
+            PostalAddress = postalAddress
+          });
+
+          await _context.SaveChangesAsync();
+
+          address = await _context.Addresses.FirstOrDefaultAsync(
+                    c => c.AddressLine.Trim().ToLower() == a.AddressLine.Trim().ToLower());
+        }
 
         await _context.CustomerAddresses.AddAsync(new CustomerAddress
         {
           Address = address,
           Customer = customer
         });
+
+        await _context.SaveChangesAsync();
       }
-      return await _context.SaveChangesAsync() > 0;
+
+      return true;
     }
     catch (Exception ex)
     {
+      // return false;
       throw new Exception(ex.Message);
     }
   }

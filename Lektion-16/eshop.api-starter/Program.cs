@@ -39,7 +39,6 @@ builder.Services.AddIdentityCore<User>(options =>
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 
 builder.Services.AddControllers();
 

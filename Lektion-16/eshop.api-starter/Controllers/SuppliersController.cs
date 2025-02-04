@@ -1,4 +1,3 @@
-using eshop.api.ViewModels.Supplier;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eshop.api.Controllers;
@@ -36,19 +35,6 @@ public class SuppliersController(ISupplierRepository repo) : ControllerBase
     catch (Exception ex)
     {
       return NotFound(new { success = false, message = ex.Message });
-    }
-  }
-
-  [HttpPost()]
-  public async Task<IActionResult> AddSuppliers(SupplierPostViewModel model)
-  {
-    if (await _repo.Add(model))
-    {
-      return StatusCode(201);
-    }
-    else
-    {
-      return BadRequest();
     }
   }
 }

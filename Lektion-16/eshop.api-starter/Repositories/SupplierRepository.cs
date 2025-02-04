@@ -1,54 +1,17 @@
 ﻿
 using eshop.api.Data;
-using eshop.api.Entities;
-using eshop.api.ViewModels.Supplier;
 using Microsoft.EntityFrameworkCore;
 
 namespace eshop.api;
 
-public class SupplierRepository(DataContext context, IAddressRepository repo) : ISupplierRepository
+public class SupplierRepository : ISupplierRepository
 {
-  private readonly DataContext _context = context;
-  private readonly IAddressRepository _repo = repo;
-
-  public async Task<bool> Add(SupplierPostViewModel model)
+  private readonly DataContext _context;
+  public SupplierRepository(DataContext context)
   {
-    try
-    {
-      if (await _context.Suppliers.FirstOrDefaultAsync(c => c.Email.ToLower().Trim() ==
-       model.Email.ToLower().Trim()) != null)
-      {
-        throw new EShopException("Leverantören finns redan");
-      }
-
-      var supplier = new Supplier
-      {
-        Name = model.Name,
-        Email = model.Email,
-        Phone = model.Phone
-      };
-
-      await _context.Suppliers.AddAsync(supplier);
-
-      foreach (var a in model.Addresses)
-      {
-        var address = await _repo.Add(a);
-        await _context.SupplierAddresses.AddAsync(new SupplierAddress { Address = address, Supplier = supplier });
-      }
-
-      return await _context.SaveChangesAsync() > 0;
-    }
-    catch (EShopException ex)
-    {
-      throw new Exception(ex.Message);
-    }
-    catch (Exception ex)
-    {
-      throw new Exception(ex.Message);
-    }
+    _context = context;
 
   }
-
   public async Task<SupplierViewModel> GetSupplier(int id)
   {
     try
